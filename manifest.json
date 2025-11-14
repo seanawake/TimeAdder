@@ -2,7 +2,7 @@
   "name": "Time Adder (AM/PM)",
   "short_name": "Time Adder",
   "description": "Calculate future time based on a start time and duration.",
-  "start_url": "time_adder.html",
+  "start_url": "index.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#2563eb",
@@ -18,4 +18,5 @@
       "type": "image/png"
     }
   ]
+
 }
