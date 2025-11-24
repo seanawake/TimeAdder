@@ -1,4 +1,4 @@
-const CACHE = 'timeadder-v1';
+const CACHE = 'timeadder-v3';
 const ASSETS = [
   './',
   './index.html',
