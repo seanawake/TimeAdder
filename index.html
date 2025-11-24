@@ -35,6 +35,7 @@
       text-size-adjust: 100%;
     }
     body { display: grid; place-items: center; padding: 12px; }
+
     .app {
       width: min(720px, 95vw);
       background: var(--card);
@@ -133,9 +134,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 
   <script>
-    // Change this to 0 if you don't want the extra minute.
-    const EXTRA_MINUTES = 1;
-
     const $ = (sel) => document.querySelector(sel);
     const startEl = $('#start');
     const offsetEl = $('#offset');
@@ -146,6 +144,29 @@
     let timePickerInstance;
     let timerId = null;
 
+    // --- Persist inputs between app opens ---
+    const LS = { start: 'ta.start', offset: 'ta.offset' };
+    function saveState() {
+      try {
+        localStorage.setItem(LS.start, (startEl.value || '').trim());
+        localStorage.setItem(LS.offset, (offsetEl.value || '').trim());
+      } catch {}
+    }
+    function loadState() {
+      try {
+        return {
+          start: localStorage.getItem(LS.start) || '',
+          offset: localStorage.getItem(LS.offset) || ''
+        };
+      } catch { return { start: '', offset: '' }; }
+    }
+    function clearState() {
+      try {
+        localStorage.removeItem(LS.start);
+        localStorage.removeItem(LS.offset);
+      } catch {}
+    }
+
     function showError(msg) {
       errorEl.textContent = msg;
       errorEl.hidden = !msg;
@@ -155,6 +176,7 @@
       }
     }
 
+    // Fallback clipboard (works in strict WebViews)
     function copyToClipboard(text) {
       const temp = document.createElement('textarea');
       temp.value = text; document.body.appendChild(temp);
@@ -242,11 +264,12 @@
 
     function compute() {
       showError('');
+      saveState();
       const start = parseTime12(startEl.value);
       const delta = parseDuration(offsetEl.value);
       if (Number.isNaN(start)) { showError('Please enter a valid start time (e.g., 8:30 AM).'); return; }
       if (Number.isNaN(delta)) { showError('Please enter a valid duration (e.g., 8.5 or 1:30).'); return; }
-      const total = start + delta + EXTRA_MINUTES; // <- +1 minute (set EXTRA_MINUTES=0 to disable)
+      const total = start + delta; // no +1 minute
       resultEl.innerHTML = `<strong>${formatTime12(total)}</strong>`;
       startCountdown(computeTargetDate(total));
     }
@@ -260,8 +283,12 @@
         onCloseEnd: compute
       });
 
-      // Initial compute using placeholder value
-      startEl.value = startEl.placeholder;
+      // Restore saved values, fallback to placeholder
+      const saved = loadState();
+      startEl.value = saved.start || startEl.placeholder;
+      if (saved.offset) offsetEl.value = saved.offset;
+      if (M && M.updateTextFields) M.updateTextFields();
+
       compute();
 
       $('#calc').addEventListener('click', compute);
@@ -270,7 +297,8 @@
         if (timePickerInstance) timePickerInstance.time = null;
         offsetEl.value = '8.5';
         resultEl.innerHTML = '<small>Result will appear here</small>';
-        showError(''); clearCountdown(); startEl.focus();
+        showError(''); clearCountdown(); clearState(); startEl.focus();
+        if (M && M.updateTextFields) M.updateTextFields();
       });
       $('#now').addEventListener('click', () => {
         const now = new Date();
@@ -280,6 +308,7 @@
         const timeStr = `${h12}:${String(m).padStart(2,'0')} ${ap}`;
         startEl.value = timeStr;
         if (timePickerInstance) timePickerInstance.time = timeStr;
+        saveState();
         compute();
       });
       $('#copy').addEventListener('click', () => {
@@ -289,13 +318,14 @@
         resultEl.innerHTML = `<strong>${txt}</strong><span class="black-text" style="font-size:.9em;margin-left:8px;">Copied!</span>`;
         showError('');
       });
-      // Debounced auto-calc on typing
+      // Debounced auto-calc and save on typing
       let t;
-      offsetEl.addEventListener('input', () => { clearTimeout(t); t = setTimeout(compute, 250); });
+      offsetEl.addEventListener('input', () => { clearTimeout(t); saveState(); t = setTimeout(compute, 250); });
       offsetEl.addEventListener('keydown', (e) => { if (e.key === 'Enter') compute(); });
+      startEl.addEventListener('input', saveState);
     });
 
-    // PWA: register service worker
+    // PWA: register service worker (keeps previous config)
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./service-worker.js', { scope: './' })
