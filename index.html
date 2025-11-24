@@ -4,7 +4,6 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#2563eb" />
-    <link rel="manifest" href="manifest.json">
     <title>Time Adder (AM/PM)</title>
     
     <!-- Materialize CSS -->
@@ -14,15 +13,13 @@
     
     <style>
         :root {
-            /* Custom Color Variables */
-            --bg: #f4f6f9; /* Soft background */
+            --bg: #f4f6f9;
             --fg: #1f2937;
             --muted: #6b7280;
-            --accent: #2563eb; /* Primary Blue */
+            --accent: #2563eb;
             --card: #ffffff;
         }
 
-        /* --- Global Setup & Desktop Centering --- */
         html, body { 
             min-height: 100%;
             height: 100%;
@@ -30,134 +27,94 @@
             font-family: 'Inter', system-ui, sans-serif;
             background: var(--bg); 
             color: var(--fg);
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
         }
         body {
-            /* Centering for Desktop */
             display: grid; 
             place-items: center;
+            padding: 12px;
         }
 
-        /* --- App Container Styling (Desktop Default) --- */
         .app {
             width: min(720px, 95vw);
             background: var(--card);
-            padding: 32px; /* Increased padding for better desktop spacing */
+            padding: 32px;
             border-radius: 16px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.18); /* Sharper, deeper shadow */
+            box-shadow: 0 15px 40px rgba(0,0,0,0.18);
         }
-        h1 { margin: 0 0 8px; font-size: 1.6rem; font-weight: 800; } /* Slightly reduced font size */
-        p.helper { margin: 0 0 30px; color: var(--muted); font-size: 0.9rem;} /* Increased bottom margin for better separation */
-        
-        /* Custom Input/Label adjustments for clean look */
-        .input-field { margin-bottom: 30px; } /* Increased margin for desktop */
+        h1 { margin: 0 0 8px; font-size: 1.6rem; font-weight: 800; }
+        p.helper { margin: 0 0 30px; color: var(--muted); font-size: 0.9rem;}
+
+        .input-field { margin-bottom: 30px; }
         .input-field label { color: var(--fg); font-weight: 600; }
         .input-field input:focus + label { color: var(--accent) !important; }
         .input-field input:focus {
             border-bottom: 2px solid var(--accent) !important;
             box-shadow: 0 2px 0 0 var(--accent) !important;
         }
-        
-        /* Input/Button sizing for better touch targets and uniformity */
-        .input-field input { 
-            min-height: 48px;
-        }
-        
-        /* New custom small button class for secondary actions */
+        .input-field input { min-height: 48px; }
+
         .btn-action-small {
-            height: 42px; /* Slightly larger than btn-small */
+            height: 42px;
             line-height: 42px;
             padding: 0 18px;
             font-size: 14px;
         }
-        
         .btn-large, .btn {
             background-color: var(--accent) !important;
             border-radius: 8px;
             font-weight: 700; 
             transition: background-color 0.2s, transform 0.1s;
         }
-        .btn:hover {
-            background-color: color-mix(in srgb, var(--accent), black 10%) !important;
-        }
-        
-        /* Secondary Action Button Styling (Flat but with slight background) */
+        .btn:hover { background-color: color-mix(in srgb, var(--accent), black 10%) !important; }
+
         .secondary-action {
             background-color: #e0e0e0 !important; 
             color: var(--fg) !important;
             border-radius: 8px;
             font-weight: 600;
         }
-        .secondary-action:hover {
-            background-color: #cccccc !important;
-        }
+        .secondary-action:hover { background-color: #cccccc !important; }
 
         .actions { 
             display: flex; 
-            gap: 12px; /* Slightly wider gap */
+            gap: 12px;
             flex-wrap: wrap; 
             margin-top: 20px;
         }
         
-        /* High-Impact Result Box */
         .result { 
-            margin-top: 30px; /* Increased top margin */
-            padding: 20px; /* Increased padding */
+            margin-top: 30px;
+            padding: 20px;
             border-radius: 12px; 
             background: var(--accent); 
             color: white; 
-            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.6); /* More prominent glow */
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.6);
         }
-        .result strong { 
-            font-size: 1.5rem; /* Reduced slightly for desktop */
-            color: white; 
-            font-weight: 800;
-        }
-        .result small {
-             color: color-mix(in srgb, white, black 20%);
-        }
-        .examples { margin-top: 25px; font-size: 0.85rem; color: var(--muted); }
-        code.kbd { 
-            padding: 2px 5px; 
-            background: #e5e7eb; 
-            border-radius: 4px; 
-            font-weight: 600;
-        }
+        .result strong { font-size: 1.5rem; color: white; font-weight: 800; }
+        .result small { color: color-mix(in srgb, white, black 20%); }
 
-        /* --- MOBILE OPTIMIZATION (Overrides for max-width: 600px) --- */
+        /* NEW: Countdown line under result */
+        .countdown{ margin-top: 10px; font-weight: 800; font-variant-numeric: tabular-nums; color: var(--fg); }
+
+        /* Error */
+        .error{ margin-top: 10px; color:#d32f2f; font-weight:700; }
+
+        .examples { margin-top: 25px; font-size: 0.85rem; color: var(--muted); }
+        code.kbd { padding: 2px 5px; background: #e5e7eb; border-radius: 4px; font-weight: 600; }
+
         @media (max-width: 600px) {
-            /* Fix: Remove desktop centering */
-            body { 
-                display: block;
-                padding: 10px; 
-                height: auto; 
-            }
-            .app {
-                width: 100%;
-                margin: 0 auto;
-                padding: 18px 16px;
-                border-radius: 10px;
-                box-shadow: none; 
-            }
-            .actions { 
-                display: grid; 
-                grid-template-columns: 1fr 1fr; /* Two buttons per row for easy tapping */
-                gap: 8px; 
-                margin-top: 15px;
-            }
-            .actions a {
-                width: 100%;
-            }
+            body { display: block; padding: 10px; height: auto; }
+            .app { width: 100%; margin: 0 auto; padding: 18px 16px; border-radius: 10px; box-shadow: none; }
+            .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 15px; }
+            .actions a { width: 100%; }
             h1 { font-size: 1.6rem; margin-bottom: 5px;}
             p.helper { margin-bottom: 15px;}
             .result strong { font-size: 1.4rem; }
             .result { margin-top: 20px; padding: 16px; }
             .input-field { margin-bottom: 20px; }
-            /* Reset small button height for mobile (100% width makes them fine) */
-            .btn-action-small {
-                height: 48px;
-                line-height: 48px;
-                font-size: 14px;
-            }
+            .btn-action-small { height: 48px; line-height: 48px; font-size: 14px; }
         }
     </style>
 </head>
@@ -167,15 +124,12 @@
         <p class="helper">Select a start time and duration to calculate the end time.</p>
 
         <div class="row">
-            <!-- START TIME INPUT (Time Picker) -->
             <div class="col s12 m6">
                 <div class="input-field">
                     <input id="start" type="text" class="timepicker validate" placeholder="8:30 AM" required>
                     <label for="start">Start Time (AM/PM)</label>
                 </div>
             </div>
-            
-            <!-- DURATION INPUT -->
             <div class="col s12 m6">
                 <div class="input-field">
                     <input id="offset" type="text" class="validate" inputmode="decimal" value="8.5" required>
@@ -186,19 +140,19 @@
         </div>
 
         <div class="actions">
-            <!-- Primary Calculation Button -->
             <a id="calc" class="waves-effect waves-light btn">Calculate</a>
-            
-            <!-- Secondary Action Buttons -->
             <a id="now" class="waves-effect waves-light btn-flat secondary-action btn-action-small">Current Time</a>
             <a id="copy" class="waves-effect waves-light btn-flat secondary-action btn-action-small">Copy Result</a>
             <a id="clear" class="waves-effect waves-light btn-flat secondary-action btn-action-small">Clear</a>
         </div>
 
         <div id="error" class="error" role="alert" hidden></div>
+
         <div id="result" class="result" aria-live="polite">
             <small>Result will appear here</small>
         </div>
+        <!-- NEW: countdown line -->
+        <div id="countdown" class="countdown" aria-live="polite"></div>
 
         <div class="examples">
             Input examples: Start Time: <code class="kbd">7:00 PM</code>, Duration: <code class="kbd">8.5</code> or <code class="kbd">1:45</code>.
@@ -214,181 +168,169 @@
         const offsetEl = $('#offset');
         const resultEl = $('#result');
         const errorEl = $('#error');
-        
+        const countdownEl = $('#countdown');
+
         let timePickerInstance; 
+        let timerId = null;
 
         function showError(msg) {
-            errorEl.textContent = msg; errorEl.hidden = !msg;
-            if (msg) resultEl.innerHTML = '<small>Result will appear here</small>';
+            errorEl.textContent = msg; 
+            errorEl.hidden = !msg;
+            if (msg) {
+                resultEl.innerHTML = '<small>Result will appear here</small>';
+                clearCountdown();
+            }
         }
         
-        // Helper function to handle clipboard copying without using navigator.clipboard
+        // Fallback clipboard (works in strict WebViews)
         function copyToClipboard(text) {
-            const tempInput = document.createElement('textarea');
-            tempInput.value = text;
-            document.body.appendChild(tempInput);
-            tempInput.select();
+            const temp = document.createElement('textarea');
+            temp.value = text;
+            document.body.appendChild(temp);
+            temp.select();
             document.execCommand('copy');
-            document.body.removeChild(tempInput);
+            document.body.removeChild(temp);
         }
 
-        /* --- Time Parsing Logic --- */
-        
+        // Parse "8:30 AM" / "7 PM"
         function parseTime12(str) {
             if (!str) return NaN;
             const s = String(str).trim().replace(/\s+/g, ' ');
             const m = s.match(/^([0-9]{1,2})(?::([0-9]{1,2}))?\s*([AaPp])[Mm]?$/);
             if (!m) return NaN; 
-            
             let hh = Number(m[1]);
             let mm = m[2] ? Number(m[2]) : 0;
             const ap = m[3].toUpperCase();
-            
             if (mm < 0 || mm > 59 || hh < 1 || hh > 12) return NaN;
-            
-            if (ap === 'A') {
-                if (hh === 12) hh = 0; 
-            } else { // PM
-                if (hh !== 12) hh += 12; 
-            }
+            if (ap === 'A') { if (hh === 12) hh = 0; } 
+            else { if (hh !== 12) hh += 12; }
             return hh * 60 + mm;
         }
 
+        // Parse decimal hours or HH:MM (supports +/-)
         function parseDuration(str) {
             if (!str) return NaN;
             const s = String(str).trim();
-            
-            // HH:MM format
             if (/^[-+]?\d{1,3}:\d{1,2}$/.test(s)) {
                 const sign = s.startsWith('-') ? -1 : 1;
-                const parts = s.replace(/^[-+]/, '').split(':');
-                const h = Number(parts[0]);
-                const m = Number(parts[1]);
+                const [hPart, mPart] = s.replace(/^[-+]/, '').split(':');
+                const h = Number(hPart), m = Number(mPart);
                 if (Number.isNaN(h) || Number.isNaN(m) || m < 0 || m > 59) return NaN;
                 return sign * (h * 60 + m);
             }
-            
-            // Decimal hours format
             const v = Number(s);
             if (Number.isNaN(v)) return NaN;
-            return Math.round(v * 60); 
+            return Math.round(v * 60);
         }
 
         function formatTime12(totalMinutes) {
             const MINUTES_IN_DAY = 1440;
             let dayOffset = Math.floor(totalMinutes / MINUTES_IN_DAY);
-            let mins = ((totalMinutes % MINUTES_IN_DAY) + MINUTES_IN_DAY) % MINUTES_IN_DAY; 
+            let mins = ((totalMinutes % MINUTES_IN_DAY) + MINUTES_IN_DAY) % MINUTES_IN_DAY;
             let hh24 = Math.floor(mins / 60);
             let mm = mins % 60;
-            
             const ampm = hh24 >= 12 ? 'PM' : 'AM';
-            let hh12 = hh24 % 12; 
-            if (hh12 === 0) hh12 = 12;
-            
+            let hh12 = hh24 % 12; if (hh12 === 0) hh12 = 12;
             const timeStr = `${hh12}:${String(mm).padStart(2, '0')} ${ampm}`;
-            
-            let dayNote = '';
             if (dayOffset !== 0) {
-                const sign = dayOffset > 0 ? '+' : '\u2212'; 
+                const sign = dayOffset > 0 ? '+' : '\u2212';
                 const daysAbs = Math.abs(dayOffset);
-                dayNote = ` (${sign}${daysAbs} day${daysAbs > 1 ? 's' : ''})`;
+                return `${timeStr} (${sign}${daysAbs} day${daysAbs > 1 ? 's' : ''})`;
             }
-            return timeStr + dayNote;
+            return timeStr;
         }
 
-        /* --- Main Logic --- */
+        // Countdown helpers
+        function computeTargetDate(totalMinutes){
+            const now = new Date();
+            const base = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0,0,0,0);
+            return new Date(base.getTime() + totalMinutes * 60000);
+        }
+        function formatDiff(ms){
+            let sec = Math.floor(Math.abs(ms)/1000);
+            const d = Math.floor(sec/86400); sec%=86400;
+            const h = Math.floor(sec/3600); sec%=3600;
+            const m = Math.floor(sec/60); const s = sec%60;
+            const hh = String(h).padStart(2,'0');
+            const mm = String(m).padStart(2,'0');
+            const ss = String(s).padStart(2,'0');
+            return d ? `${d}d ${hh}:${mm}:${ss}` : `${hh}:${mm}:${ss}`;
+        }
+        function clearCountdown(){
+            if (timerId) { clearInterval(timerId); timerId = null; }
+            countdownEl.textContent = '';
+        }
+        function startCountdown(target){
+            clearCountdown();
+            function tick(){
+                const diff = target - new Date();
+                const label = diff >= 0 ? 'Remaining: ' : 'Overdue by: ';
+                countdownEl.textContent = label + formatDiff(diff);
+            }
+            tick();
+            timerId = setInterval(tick, 1000);
+        }
 
         function compute() {
             showError('');
             const startMinutes = parseTime12(startEl.value);
             const durationMinutes = parseDuration(offsetEl.value);
 
-            if (Number.isNaN(startMinutes)) { 
-                showError('Please enter a valid start time (e.g., 8:30 AM).'); 
-                return; 
-            }
-            if (Number.isNaN(durationMinutes)) { 
-                showError('Please enter a valid duration (e.g., 8.5 or 1:30).'); 
-                return; 
-            }
+            if (Number.isNaN(startMinutes)) { showError('Please enter a valid start time (e.g., 8:30 AM).'); return; }
+            if (Number.isNaN(durationMinutes)) { showError('Please enter a valid duration (e.g., 8.5 or 1:30).'); return; }
             
             const total = startMinutes + durationMinutes;
-            const out = formatTime12(total);
-            resultEl.innerHTML = `<strong>${out}</strong>`;
+            resultEl.innerHTML = `<strong>${formatTime12(total)}</strong>`;
+            startCountdown(computeTargetDate(total));
         }
 
-        /* --- Event Handlers & Initialization --- */
-
         document.addEventListener('DOMContentLoaded', function() {
-            // 1. Initialize Materialize Time Picker
             const timePickerOptions = {
-                defaultTime: startEl.placeholder,
+                defaultTime: startEl.placeholder, // e.g., "8:30 AM"
                 twelveHour: true, 
                 autoClose: true,
-                onSelect: compute, 
-                onCloseEnd: compute 
+                onSelect: compute,
+                onCloseEnd: compute
             };
             timePickerInstance = M.Timepicker.init(startEl, timePickerOptions);
-            
-            // Set initial value for immediate calculation (matches placeholder)
+
+            // Initial compute using placeholder
             startEl.value = startEl.placeholder;
             compute();
 
-            // 2. Set up event listeners
             $('#calc').addEventListener('click', compute);
-            
             $('#clear').addEventListener('click', () => {
                 startEl.value = '';
-                if(timePickerInstance) timePickerInstance.time = null;
-                offsetEl.value = '8.5'; 
+                if (timePickerInstance) timePickerInstance.time = null;
+                offsetEl.value = '8.5';
                 resultEl.innerHTML = '<small>Result will appear here</small>';
-                showError(''); 
+                showError('');
+                clearCountdown();
                 startEl.focus();
             });
-            
             $('#now').addEventListener('click', () => {
                 const now = new Date();
-                let hh = now.getHours();
-                const mm = now.getMinutes();
-                const ap = hh >= 12 ? 'PM' : 'AM';
-                let hh12 = hh % 12; if (hh12 === 0) hh12 = 12;
-                const timeStr = `${hh12}:${String(mm).padStart(2, '0')} ${ap}`;
-
+                let h = now.getHours(), m = now.getMinutes();
+                const ap = h >= 12 ? 'PM' : 'AM';
+                let h12 = h % 12; if (h12 === 0) h12 = 12;
+                const timeStr = `${h12}:${String(m).padStart(2,'0')} ${ap}`;
                 startEl.value = timeStr;
-                if(timePickerInstance) timePickerInstance.time = timeStr;
+                if (timePickerInstance) timePickerInstance.time = timeStr;
                 compute();
             });
-            
             $('#copy').addEventListener('click', () => {
                 const txt = resultEl.textContent.trim();
-                if (!txt || txt === 'Result will appear here') { 
-                    showError('Nothing to copy. Calculate first.'); 
-                    return; 
-                }
+                if (!txt || txt === 'Result will appear here') { showError('Nothing to copy. Calculate first.'); return; }
                 copyToClipboard(txt);
-                // Note: Changed span class to black-text to ensure contrast on white background on copy
-                resultEl.innerHTML = `<strong>${txt}</strong><span class="black-text" style="font-size: 0.9em; margin-left: 8px;">Copied!</span>`;
+                resultEl.innerHTML = `<strong>${txt}</strong><span class="black-text" style="font-size:.9em;margin-left:8px;">Copied!</span>`;
                 showError('');
             });
 
-            // 3. Auto-calc on duration input change (debounced)
-            let t; offsetEl.addEventListener('input', () => {
-                clearTimeout(t); t = setTimeout(compute, 250);
-            });
-            // Also compute when enter is pressed on the duration field
-            offsetEl.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') compute();
-            });
+            // Debounced auto-calc on typing
+            let t;
+            offsetEl.addEventListener('input', () => { clearTimeout(t); t = setTimeout(compute, 250); });
+            offsetEl.addEventListener('keydown', (e) => { if (e.key === 'Enter') compute(); });
         });
     </script>
-    <script>
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('service-worker.js')
-        .then(() => console.log('Service Worker registered'))
-        .catch(err => console.log('SW registration failed:', err));
-}
-    </script>
-    
 </body>
 </html>
-
